@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeMaster Dashboard</title>
+
+<style>
+:root{
+  --blue:#2563eb;
+  --bg:#f8fafc;
+  --text:#0f172a;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:system-ui,sans-serif;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* ===== NAVBAR ===== */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:.8rem 1.5rem;
+  background:var(--blue);
+  color:#fff;
+  position:sticky;
+  top:0;
+}
+
+.nav-left{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+}
+
+.hamburger{
+  font-size:1.6rem;
+  cursor:pointer;
+}
+
+.logo{
+  font-weight:700;
+}
+
+.nav-right{
+  position:relative;
+}
+
+.profile-pic{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  cursor:pointer;
+  border:2px solid #fff;
+}
+
+/* ===== PROFILE MENU ===== */
+#profileMenu{
+  position:absolute;
+  right:0;
+  top:50px;
+  background:#fff;
+  color:#000;
+  border-radius:.5rem;
+  box-shadow:0 10px 25px rgba(0,0,0,.15);
+  display:none;
+  min-width:160px;
+}
+
+#profileMenu p{
+  padding:.8rem 1rem;
+  cursor:pointer;
+}
+
+#profileMenu p:hover{
+  background:#f1f5f9;
+}
+
+/* ===== SIDE MENU ===== */
+.side-menu{
+  position:fixed;
+  left:-260px;
+  top:0;
+  width:260px;
+  height:100vh;
+  background:#fff;
+  padding:1.5rem;
+  box-shadow:2px 0 20px rgba(0,0,0,.15);
+  transition:.3s;
+}
+
+.side-menu.open{
+  left:0;
+}
+
+.hero{
+  padding:4rem 2rem;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="nav-left">
+    <span class="hamburger" onclick="toggleMenu()">☰</span>
+    <span class="logo">CodeMaster</span>
+  </div>
+
+  <div class="nav-right">
+    <img id="userPhoto" class="profile-pic" onclick="toggleProfile()">
+    <div id="profileMenu">
+      <p id="userName">User</p>
+      <p onclick="logout()" style="color:red;">Logout</p>
+    </div>
+  </div>
+</header>
+
+<aside class="side-menu" id="sideMenu">
+  <h3>Courses</h3>
+  <p>HTML</p>
+  <p>CSS</p>
+  <p>JavaScript</p>
+  <p>Python</p>
+</aside>
+
+<section class="hero">
+  <h1>Welcome to CodeMaster</h1>
+  <p>Your coding journey starts here 🚀</p>
+</section>
+
+<!-- 🔥 FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+/* 🔴 PASTE YOUR CONFIG HERE */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+/* 🔐 CHECK LOGIN */
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    document.getElementById("userPhoto").src =
+      user.photoURL || "https://i.pravatar.cc/40";
+    document.getElementById("userName").textContent =
+      user.displayName || "User";
+  }
+});
+
+/* 🚪 LOGOUT */
+window.logout = function(){
+  signOut(auth).then(()=>{
+    window.location.href = "login.html";
+  });
+};
+</script>
+
+<script>
+function toggleMenu(){
+  document.getElementById("sideMenu").classList.toggle("open");
+}
+
+function toggleProfile(){
+  const menu = document.getElementById("profileMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+</script>
+
+</body>
+</html>
+

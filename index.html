@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeMaster – Learn Coding</title>
+
+  <style>
+    :root{
+      --primary:#1e3a8a;
+      --accent:#f97316;
+      --bg:#f8fafc;
+      --text:#0f172a;
+      --muted:#64748b;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,Segoe UI,Roboto,sans-serif}
+    body{background:var(--bg);color:var(--text);line-height:1.6}
+
+    header{
+      background:linear-gradient(135deg,var(--primary),#0f172a);
+      color:#fff;
+      padding:1rem 2rem;
+      position:sticky;top:0;z-index:10;
+    }
+    nav{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .logo{font-size:1.3rem;font-weight:700}
+    .nav-links a{
+      color:#fff;text-decoration:none;margin:0 0.75rem;font-size:0.95rem
+    }
+    .btn{
+      background:var(--accent);color:#fff;border:none;
+      padding:0.6rem 1rem;border-radius:0.5rem;cursor:pointer
+    }
+
+    /* HERO */
+    .hero{
+      position:relative;
+      min-height:70vh;
+      display:flex;
+      align-items:center;
+      padding:4rem 2rem 4rem 4rem;
+      color:#fff;
+      background-image:url('undraw_writing-online_x665.svg');
+      background-size:35% auto;
+      background-position:right center;
+      background-repeat:no-repeat;
+    }
+    .overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(135deg, rgba(15,23,42,.8), rgba(30,58,138,.7));
+    }
+    .hero-content{
+      position:relative;z-index:1;
+      max-width:520px;
+      background:rgba(15,23,42,.35);
+      backdrop-filter:blur(6px);
+      border-radius:1.25rem;
+      padding:2.5rem;
+    }
+    .hero h1{font-size:2.5rem;margin-bottom:1rem}
+    .hero p{color:#e5e7eb;margin-bottom:1.5rem}
+
+    section{padding:3rem 2rem}
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:1.5rem
+    }
+    .card{
+      background:#fff;
+      padding:1.5rem;
+      border-radius:1rem;
+      box-shadow:0 10px 25px rgba(0,0,0,0.05)
+    }
+    .card img{width:100%;border-radius:.75rem;margin-bottom:1rem}
+
+    footer{
+      background:#0f172a;
+      color:#cbd5f5;
+      text-align:center;
+      padding:2rem
+    }
+
+    /* AUTH MODAL */
+    .auth-modal{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.75);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:200;
+    }
+    .auth-box{
+      background:#fff;
+      width:100%;
+      max-width:380px;
+      padding:2rem;
+      border-radius:1rem;
+      text-align:center;
+      position:relative;
+    }
+    .auth-box h2{margin-bottom:.3rem}
+    .auth-box p{color:#64748b;font-size:.9rem;margin-bottom:1rem}
+    .auth-box input{
+      width:100%;
+      padding:.7rem;
+      margin-bottom:.7rem;
+      border-radius:.5rem;
+      border:1px solid #e5e7eb;
+    }
+    .google-btn{
+      width:100%;
+      padding:.7rem;
+      border-radius:.5rem;
+      border:1px solid #e5e7eb;
+      background:#fff;
+      cursor:pointer;
+      font-weight:500;
+      margin-bottom:.8rem;
+    }
+    .divider{font-size:.8rem;color:#94a3b8;margin:.8rem 0}
+    .full{width:100%}
+    .switch{margin-top:1rem;font-size:.85rem}
+    .switch a{color:#2563eb;text-decoration:none}
+    .close{
+      position:absolute;
+      right:15px;
+      top:10px;
+      font-size:1.5rem;
+      cursor:pointer;
+    }
+
+    @media(max-width:768px){
+      .hero{
+        padding:3rem 2rem;
+        background-size:70% auto;
+        background-position:center bottom;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword
+  } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAgCa-3DAHAjy96vdaN7kTJjVMTl5G1X3M",
+    authDomain: "codex-94eb7.firebaseapp.com",
+    projectId: "codex-94eb7",
+    storageBucket: "codex-94eb7.firebasestorage.app",
+    messagingSenderId: "833771886900",
+    appId: "1:833771886900:web:5d3a4a11c57690a64cad61"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // 🔵 GOOGLE SIGN IN
+  window.googleLogin = async () => {
+    try {
+      await signInWithPopup(auth, provider);
+      alert("Signed in with Google 🎉");
+      closeAuth();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  // ✉️ EMAIL AUTH
+  window.emailAuth = async () => {
+    const email = document.querySelector('input[type="email"]').value;
+    const password = document.querySelector('input[type="password"]').value;
+
+    try {
+      if (isSignUp) {
+        await createUserWithEmailAndPassword(auth, email, password);
+        alert("Account created 🎉");
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert("Signed in successfully ✅");
+      }
+      closeAuth();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+</script>
+<header>
+  <nav>
+    <div class="logo">CodeMaster</div>
+    <div class="nav-links">
+      <a href="#courses">Courses</a>
+      <a href="#practice">Practice</a>
+      <a href="#projects">Projects</a>
+      <a href="#community">Community</a>
+      <button class="btn" onclick="openAuth()">Get Started</button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="overlay"></div>
+  <div class="hero-content">
+    <h1>Learn to Code, Step by Step</h1>
+    <p>Beginner-friendly lessons with clear explanations and hands-on practice.</p>
+    <button class="btn" onclick="openAuth()">Start Learning</button>
+  </div>
+</section>
+
+<section id="courses">
+  <h2>Popular Courses</h2>
+  <div class="cards">
+    <div class="card">
+      <img src="undraw_code-review_jdgp.png">
+      <h3>HTML & CSS</h3>
+      <p>Build and style websites.</p>
+    </div>
+    <div class="card">
+      <img src="undraw_react_ytu4.png">
+      <h3>JavaScript</h3>
+      <p>Make websites interactive.</p>
+    </div>
+    <div class="card">
+      <img src="undraw_proud-coder_bivp.png">
+      <h3>Python</h3>
+      <p>Beginner-friendly programming.</p>
+    </div>
+    <div class="card">
+      <img src="undraw_projections_fhch.png">
+      <h3>Projects</h3>
+      <p>Build real things.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 CodeMaster. Learn • Practice • Build</p>
+</footer>
+
+<!-- AUTH MODAL -->
+<div class="auth-modal" id="authModal">
+  <div class="auth-box">
+    <span class="close" onclick="closeAuth()">&times;</span>
+
+    <h2 id="authTitle">Welcome Back</h2>
+    <p id="authDesc">Sign in to continue learning</p>
+
+    <button class="google-btn" onclick="googleLogin()">
+  Continue with Google
+</button>
+
+
+    <!-- SIGN UP ONLY -->
+    <input type="text" id="nameField" placeholder="Full Name" style="display:none;">
+
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Password">
+
+   <button class="btn full" id="authAction" onclick="emailAuth()">
+  Sign In
+</button>
+
+
+    <div class="switch">
+      <span id="switchText">Don’t have an account?</span>
+      <a href="#" onclick="toggleAuth()">Sign up</a>
+    </div>
+  </div>
+</div>
+<script>
+  let isSignUp = false;
+
+  function openAuth(){
+    document.getElementById("authModal").style.display = "flex";
+  }
+
+  function closeAuth(){
+    document.getElementById("authModal").style.display = "none";
+  }
+
+  function toggleAuth(){
+    isSignUp = !isSignUp;
+
+    document.getElementById("nameField").style.display = isSignUp ? "block" : "none";
+    document.getElementById("authTitle").innerText = isSignUp ? "Create Account" : "Welcome Back";
+    document.getElementById("authDesc").innerText = isSignUp
+      ? "Sign up to start learning"
+      : "Sign in to continue learning";
+
+    document.getElementById("authAction").innerText = isSignUp ? "Sign Up" : "Sign In";
+    document.getElementById("switchText").innerText = isSignUp
+      ? "Already have an account?"
+      : "Don’t have an account?";
+
+    event.preventDefault();
+  }
+</script>
+
+
+</body>
+</html>
