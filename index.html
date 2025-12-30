@@ -6,6 +6,34 @@
   <title>CodeMaster – Learn Coding</title>
 
   <style>
+@media(max-width:768px){
+  .hero{
+    padding:3rem 1.5rem;
+    background-size:50% auto;
+    background-position:center bottom;
+    min-height:60vh;
+  }
+  .hero h1{font-size:1.8rem;}
+  .hero p{font-size:0.95rem;}
+  .cards{grid-template-columns:1fr;}
+  section{padding:2rem 1rem;}
+  .auth-box{padding:1.5rem;}
+}
+
+@media(max-width:480px){
+  .hero{
+    padding:2rem 1rem;
+    background-size:60% auto;
+    background-position:center bottom;
+  }
+  .hero h1{font-size:1.5rem;}
+  .hero p{font-size:0.9rem;}
+  .btn{padding:0.5rem 0.8rem;font-size:0.9rem;}
+  .auth-box{width:90%;padding:1rem;}
+  .cards{gap:1rem;}
+}
+
+
     :root{
       --primary:#1e3a8a;
       --accent:#f97316;
@@ -32,7 +60,6 @@
       padding:0.6rem 1rem;border-radius:0.5rem;cursor:pointer
     }
 
-    /* HERO */
     .hero{
       position:relative;
       min-height:70vh;
@@ -82,7 +109,6 @@
       padding:2rem
     }
 
-    /* AUTH MODAL */
     .auth-modal{
       position:fixed;
       inset:0;
@@ -141,7 +167,6 @@
     }
   </style>
 </head>
-
 <body>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
@@ -154,31 +179,29 @@
   } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyAgCa-3DAHAjy96vdaN7kTJjVMTl5G1X3M",
-    authDomain: "codex-94eb7.firebaseapp.com",
-    projectId: "codex-94eb7",
-    storageBucket: "codex-94eb7.firebasestorage.app",
-    messagingSenderId: "833771886900",
-    appId: "1:833771886900:web:5d3a4a11c57690a64cad61"
+    apiKey: "AIzaSyBt65ybyXL_yNPff3QehR9nA5E47TnVpbQ",
+    authDomain: "codex-ff991.firebaseapp.com",
+    projectId: "codex-ff991",
+    storageBucket: "codex-ff991.firebasestorage.app",
+    messagingSenderId: "322435247000",
+    appId: "1:322435247000:web:41c54f9a28c4eec42fd9ed"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // 🔵 GOOGLE SIGN IN
   window.googleLogin = async () => {
     try {
       await signInWithPopup(auth, provider);
-      alert("Signed in with Google 🎉");
-      closeAuth();
-    } catch (err) {
-      alert(err.message);
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      alert(error.message);
     }
   };
 
-  // ✉️ EMAIL AUTH
+  let isSignUp = false;
+
   window.emailAuth = async () => {
     const email = document.querySelector('input[type="email"]').value;
     const password = document.querySelector('input[type="password"]').value;
@@ -197,6 +220,7 @@
     }
   };
 </script>
+
 <header>
   <nav>
     <div class="logo">CodeMaster</div>
@@ -223,22 +247,22 @@
   <h2>Popular Courses</h2>
   <div class="cards">
     <div class="card">
-      <img src="undraw_code-review_jdgp.png">
+      <img src="undraw_code-review_jdgp.png" alt="HTML & CSS">
       <h3>HTML & CSS</h3>
       <p>Build and style websites.</p>
     </div>
     <div class="card">
-      <img src="undraw_react_ytu4.png">
+      <img src="undraw_react_ytu4.png" alt="JavaScript">
       <h3>JavaScript</h3>
       <p>Make websites interactive.</p>
     </div>
     <div class="card">
-      <img src="undraw_proud-coder_bivp.png">
+      <img src="undraw_proud-coder_bivp.png" alt="Python">
       <h3>Python</h3>
       <p>Beginner-friendly programming.</p>
     </div>
     <div class="card">
-      <img src="undraw_projections_fhch.png">
+      <img src="undraw_projections_fhch.png" alt="Projects">
       <h3>Projects</h3>
       <p>Build real things.</p>
     </div>
@@ -249,7 +273,6 @@
   <p>© 2025 CodeMaster. Learn • Practice • Build</p>
 </footer>
 
-<!-- AUTH MODAL -->
 <div class="auth-modal" id="authModal">
   <div class="auth-box">
     <span class="close" onclick="closeAuth()">&times;</span>
@@ -257,40 +280,32 @@
     <h2 id="authTitle">Welcome Back</h2>
     <p id="authDesc">Sign in to continue learning</p>
 
-    <button class="google-btn" onclick="googleLogin()">
-  Continue with Google
-</button>
+    <button class="google-btn" onclick="googleLogin()">Continue with Google</button>
 
-
-    <!-- SIGN UP ONLY -->
     <input type="text" id="nameField" placeholder="Full Name" style="display:none;">
-
     <input type="email" placeholder="Email">
     <input type="password" placeholder="Password">
 
-   <button class="btn full" id="authAction" onclick="emailAuth()">
-  Sign In
-</button>
-
+    <button class="btn full" id="authAction" onclick="emailAuth()">Sign In</button>
 
     <div class="switch">
       <span id="switchText">Don’t have an account?</span>
-      <a href="#" onclick="toggleAuth()">Sign up</a>
+      <a href="#" onclick="toggleAuth(event)">Sign up</a>
     </div>
   </div>
 </div>
-<script>
-  let isSignUp = false;
 
-  function openAuth(){
+<script>
+  function openAuth() {
     document.getElementById("authModal").style.display = "flex";
   }
 
-  function closeAuth(){
+  function closeAuth() {
     document.getElementById("authModal").style.display = "none";
   }
 
-  function toggleAuth(){
+  function toggleAuth(event) {
+    event.preventDefault();
     isSignUp = !isSignUp;
 
     document.getElementById("nameField").style.display = isSignUp ? "block" : "none";
@@ -303,11 +318,8 @@
     document.getElementById("switchText").innerText = isSignUp
       ? "Already have an account?"
       : "Don’t have an account?";
-
-    event.preventDefault();
   }
 </script>
-
 
 </body>
 </html>
